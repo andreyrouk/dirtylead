@@ -21,8 +21,7 @@ run_response = requests.post(
     f"https://api.apify.com/v2/acts/{ACTOR_ID}/runs",
     headers=headers,
     json={
-        "searchQuery": SEARCH_QUERY,
-        "location": LOCATION,
+        "query": f"{SEARCH_QUERY} in {LOCATION}",
         "maxResults": MAX_RESULTS
     }
 )
@@ -48,7 +47,7 @@ while True:
 
     if status in ["SUCCEEDED", "FAILED", "ABORTED"]:
         break
-    time.sleep(5)
+    time.sleep(10)
 
 if status != "SUCCEEDED":
     print(f"Run ended with status: {status}")
