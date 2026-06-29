@@ -65,7 +65,11 @@ results_response = requests.get(
 results = results_response.json()
 print(f"Got {len(results)} results.")
 
-# Step 4: Save to CSV
+# Debug: print all keys from first result to find name field
+if results:
+    print("Available fields in first result:", list(results[0].keys()))
+
+# Step 4: Save to CSV - try multiple possible name fields
 city = LOCATION.split(",")[0].strip().replace(" ", "_")
 output_file = f"cleaning_leads_{city}.csv"
 fields = ["name", "address", "phone", "website", "rating", "reviewCount", "category"]
@@ -74,14 +78,23 @@ with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
     writer.writeheader()
     for r in results:
+        # Try multiple possible name field keys
+        name = (
+            r.get("name") or
+            r.get("title") or
+            r.get("placeName") or
+            r.get("businessName") or
+            r.get("placeTitle") or
+            ""
+        )
         writer.writerow({
-            "name": r.get("name", ""),
-            "address": r.get("address", ""),
-            "phone": r.get("phone", ""),
-            "website": r.get("website", ""),
-            "rating": r.get("rating", ""),
-            "reviewCount": r.get("reviewCount", ""),
-            "category": r.get("category", "")
+            "name": name,
+            "address": r.get("address") or r.get("fullAddress") or "",
+            "phone": r.get("phone") or r.get("phoneNumber") or "",
+            "website": r.get("website") or r.get("url") or "",
+            "rating": r.get("rating") or r.get("stars") or "",
+            "reviewCount": r.get("reviewCount") or r.get("reviews") or "",
+            "category": r.get("category") or r.get("categories") or ""
         })
 
 print(f"Saved to {output_file}")
