@@ -21,7 +21,7 @@ run_response = requests.post(
     f"https://api.apify.com/v2/acts/{ACTOR_ID}/runs",
     headers=headers,
     json={
-        "query": f"{SEARCH_QUERY} in {LOCATION}",
+        "query": [f"{SEARCH_QUERY} in {LOCATION}"],
         "maxResults": MAX_RESULTS
     }
 )
